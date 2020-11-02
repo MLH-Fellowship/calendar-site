@@ -23,6 +23,8 @@ let calendarElement
 
 document.addEventListener('DOMContentLoaded', () => {
     calendarElement = document.querySelector('#calendar')
+    
+    const now = Date.now();
 
     calendar = new FullCalendar.Calendar(calendarElement, {
         plugins: ['dayGrid', 'googleCalendar', 'list', 'timeGrid'],
@@ -46,7 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 listDayFormat: { year: 'numeric', month: 'short', day: '2-digit', omitCommas: true },
                 listDayAltFormat: { weekday: 'long' }
             }
-        }
+        },
+        eventRender: ({ event }) => event.end.getTime() > now,
     })
     document.getElementById('timezone').innerHTML = `All times are in your local timezone! (${Intl.DateTimeFormat().resolvedOptions().timeZone})`
     calendar.render()
