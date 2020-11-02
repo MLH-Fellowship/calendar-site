@@ -59,13 +59,25 @@ function displayEvent(info) {
     $('#event-title').text(info.event._def.title);
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
     let description = info.event._def.extendedProps.description;
+	
+	
+	let calendlyRegexCancel = new RegExp('(https:\/\/calendly.com\/cancellations\/)+');
+	let calendlyRegexReschedule = new RegExp('(https:\/\/calendly.com\/reschedulings\/)+');
+	
+	while(calendlyRegexCancel.test(description) || calendlyRegexReschedule.test(description))
+	{
+		description = description.replace(calendlyRegexCancel, '');
+		description = description.replace(calendlyRegexReschedule, '');
+	}
 
     let regex = new RegExp('(?<=href=").*?(?=")');
     let regexHtml = new RegExp('<\s*a[^>]*>(.*?)<\s*/\s*a>');
-    if (regex.test(description)) {
-        let url = description.match(regex);
-        description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
-    }
+    while(regex.test(description))
+	{
+		let url = description.match(regex);
+		description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
+	}
+	
     $('#event-desc').text(description);
     $('#event-link').attr("href", info.event._def.extendedProps.location);
     $('#event-modal').modal('show')
