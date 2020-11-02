@@ -1,0 +1,108 @@
+
+:root {
+  --accent: #F8BA29;
+}
+.fc-content {
+  background-color: #5c47ff;
+  color: #ffffff;
+}
+
+.fc-left {
+    display: none;
+}
+
+.fc-header-toolbar {
+    display: none !important;
+}
+
+.fc-button-primary {
+    background-color: var(--accent) !important;
+    border-color: black !important;
+}
+
+.fc-event-dot {
+    background-color: var(--accent) !important;
+}
+
+.fc-event {
+  background-color: var(--accent);
+}
+
+#event-title {
+    color: black;
+    font-family: "Poppins";
+}
+
+#calendar-error {
+  text-align: center;
+}
+
+#event-modal h4, #event-modal p {
+  font-family: unset !important;
+}
+
+#event-link {
+}
+
+#event-button {
+    margin: 20px !important;
+    color: white;
+    background-color: var(--accent);
+    position: relative;
+    left: 50%;
+    margin-left: -50px !important;
+    display: inline-block;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 4px;
+    padding: 0 16px;
+    min-width: 64px;
+    height: 40px;
+    vertical-align: middle;
+    text-align: center;
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 
+}
+
+#timezone {
+  font-family: "Poppins";
+  margin: 1em;
+}
+
+.modal-title {
+    margin: 0.5em;
+}
+
+.modal-body {
+    margin: 0.7em;
+}
+
+#event-desc {
+    margin: 0.2em !important;
+}
+
+.line {
+    margin-left: 0.3em !important;
+    margin-right: 0.3em !important;
+    margin-top: 1em !important;
+    margin-bottom: 1em !important;
+    box-shadow: none !important; 
+}
+
+.material-icons {
+  font-size: 26px;
+  position: relative;
+  top: 0.2em;
+  padding-right: 0.2em;
+  color: black;
+}
+
+.page h1, .page p, .page h2 {
+    color: black !important;
+}
+
+@media only screen and (max-width : 900px) {
+   #calendar {
+     width: 100vw;
+     margin-left: calc(-50vw + 50%);
+   }
+}

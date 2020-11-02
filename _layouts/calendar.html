@@ -1,0 +1,46 @@
+---
+layout: default
+---
+
+<!-- FullCalendar.io -->
+{% if page.scripts %}
+<!-- page-specific scripts -->
+{% for script in page.scripts %}
+<script src="{{ script.url | relative_url }}" {%- if script.hash %} integrity="{{ script.hash }}"
+    crossorigin="anonymous" {%- endif -%}></script>
+{% endfor %}
+{% endif %}
+
+<!-- external style sheets -->
+{%- if page.styles -%}
+<!-- page-specific style sheets -->
+{% for style in page.styles %}
+<link rel="stylesheet" href="{{ style.url | relative_url }}" {%- if style.hash %} integrity="{{ style.hash }}"
+    crossorigin="anonymous" {%- endif -%}>
+{% endfor %}
+{% endif %}
+{% include navbar.html %}
+
+<div class="container page-content page">
+    {{ content }}
+    <div id="timezone"></div>
+    <div id="calendar"></div>
+    <div id="event-modal" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="material-icons">event</i><b id="event-title"></b></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div><i class="material-icons">access_time</i> Date - <b id="event-date"></b></div>
+                    <hr class="line">
+                    <p id="event-desc"></p>
+                    <a id="event-link" href="#"><button id="event-button">Join in!</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
