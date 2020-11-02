@@ -60,7 +60,6 @@ function displayEvent(info) {
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
     let description = info.event._def.extendedProps.description;
 	
-	
 	let calendlyRegexCancel = new RegExp('(https:\/\/calendly.com\/cancellations\/)+');
 	let calendlyRegexReschedule = new RegExp('(https:\/\/calendly.com\/reschedulings\/)+');
 	
