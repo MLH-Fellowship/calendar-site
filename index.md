@@ -25,5 +25,5 @@ scripts:
     hash: sha384-Ha5I8QPCC/z63Vv2VZG8QZIXGIhDPrLLu3fMx46RG+FLQqpWNzsA8mZIR9YXPahZ
   - url: https://unpkg.com/@fullcalendar/bootstrap@4.3.0/main.min.js
     hash: sha384-xcJfdzrkJuIsmAm2DIzmmFsRJA9pItoEHjpES5SO9uQJ8cL/fN+ARTFFPpsB8utm
-  - url: ./assets/js/calendar.js
+  - url: assets/js/calendar.js
 ---
