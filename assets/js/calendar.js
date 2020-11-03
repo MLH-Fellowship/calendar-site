@@ -83,8 +83,7 @@ function displayEvent(info) {
     } else {
         description = "";
     }
-	
-    $('#event-desc').html(description);
+    $('#event-desc').html(filterXSS(description));
     $('#event-link').attr("href", info.event._def.extendedProps.location);
     $('#event-modal').modal('show')
 }
