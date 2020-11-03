@@ -77,7 +77,8 @@ function displayEvent(info) {
     while(regex.test(description))
 	{
 		let url = description.match(regex);
-		description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
+        description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
+        description = description.replace(/<br\s*[\/]?>/gi, "\n");
 	}
 	
     $('#event-desc').text(description);
