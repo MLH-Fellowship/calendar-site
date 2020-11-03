@@ -103,42 +103,59 @@ const drop = (o, keys) => {
   return r
 }
 
-const rejoinInOrder = (store, data) => 
-  store.reduce((collection, [key]) => collection + ((data[key] || {}).raw || ''), '')
+const rejoinInOrder = (order, data) => 
+    order.reduce((collection, key) => collection + ((data[key] || {}).raw || ''), '')
+  
 
-const extractDataAndReformatDesciption = (description, normalizationMap, dropMap) => {
-  const store = parseKeyVal(description)
-  const normalized = store.map(([key, val]) => {
-    return [removeParentheses(key)
-      .replace(/[^\w]+/g, ' ')
-      .trim()
-      .toLowerCase()
-      .replace(/\s/g, '_'), {
-        raw: key + ':' + val,
-        val: val.trim()
-      }
-    ]
-  })
-  console.log(normalized);
-  const data = drop(normalized.reduce((collection, item) => ({ ...collection, [item[0]]: item[1] }), {}), dropMap)
-  const ret = {}
-  const usedKeys = []
-  Object.keys(normalizationMap).forEach(key => {
-    for (const subKey of normalizationMap[key]) {
-      if ((ret[key] = data[subKey]) !== undefined) {
-        ret[key] = ret[key].val;
-        usedKeys.push(subKey)
-        break;
-      }
-    }
-  })
+const extractDataAndReformatDesciption = (description, normalizationMap, dropMap, orderOverride) => {
+    const store = parseKeyVal(description)
+    const normalized = store.map(([key, val]) => {
+        return [removeParentheses(key)
+        .replace(/[^\w]+/g, ' ')
+        .trim()
+        .toLowerCase()
+        .replace(/\s/g, '_'), {
+            raw: key + ':' + val,
+            val: val.trim()
+        }
+        ]
+    })
+    const data = drop(normalized.reduce((collection, item) => ({ ...collection, [item[0]]: item[1] }), {}), dropMap)
+    console.log(data);
+    const ret = {}
+    const usedKeys = [];
+    Object.keys(normalizationMap).forEach(key => {
+        for (const subKey of normalizationMap[key]) {
+            if ((ret[key] = data[subKey]) !== undefined) {
+                ret[key] = ret[key].val
+                usedKeys.push(subKey)
+                break
+            }
+        }
+    });
+    const order = [...orderOverride]
+    normalized.forEach(([key]) => {
+        if (!order.includes(key)) order.push(key)
+    })
+    
+    
   return {
     ...ret,
-    raw: rejoinInOrder(normalized, drop(data, usedKeys))
+    raw: rejoinInOrder(order, drop(data, usedKeys))
   }
 }
 
 const RE_URL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/i);
+
+const NORMALIZATION_MAP = {
+    linkedin: ['your_linkedin_url'],
+    github: ['your_github_url'],
+    twitter: ['your_twitter_url']
+}
+
+const DROP_MAP = ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule']
+
+const ORDER_OVERRIDE = ['speaker', 'short_speaker_bio', 'please_give_a_brief_description_of_this_session_this_will_be_shared_with_the_fellows']
 
 function displayEvent(info) {
     info.jsEvent.preventDefault()
@@ -148,14 +165,9 @@ function displayEvent(info) {
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
     const description = info.event._def.extendedProps.description;
 
-    const normalizationMap = {
-        linkedin: ['your_linkedin_url'],
-        github: ['your_github_url'],
-        twitter: ['your_twitter_url']
-    }
+    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), NORMALIZATION_MAP, DROP_MAP, ORDER_OVERRIDE);
 
-    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), normalizationMap, ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule']);
-
+    // fill out social links
     ['linkedin', 'github', 'twitter'].forEach(key => {
         const el = $(`#social-${key}`).hide();
         const v = desc[key]
