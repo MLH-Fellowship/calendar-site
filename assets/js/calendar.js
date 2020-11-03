@@ -62,14 +62,29 @@ function displayEvent(info) {
     $('#event-title').text(info.event._def.title);
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
     let description = info.event._def.extendedProps.description;
-
-    let regex = new RegExp('(?<=href=").*?(?=")');
-    let regexHtml = new RegExp('<\s*a[^>]*>(.*?)<\s*/\s*a>');
-    if (regex.test(description)) {
-        let url = description.match(regex);
-        description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
+	let calendlyRegexCancel = new RegExp('(https:\/\/calendly.com\/cancellations\/)+');
+	let calendlyRegexReschedule = new RegExp('(https:\/\/calendly.com\/reschedulings\/)+');
+    
+    if (typeof description !== 'undefined') {
+        console.log("")
+        while (calendlyRegexCancel.test(description) || calendlyRegexReschedule.test(description))
+        {
+            description = description.replace(calendlyRegexCancel, '');
+            description = description.replace(calendlyRegexReschedule, '');
+        }
+    
+        let regex = new RegExp('(?<=href=").*?(?=")');
+        let regexHtml = new RegExp('<\s*a[^>]*>(.*?)<\s*/\s*a>');
+        while (regex.test(description))
+        {
+            let url = description.match(regex);
+            description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
+        }
+    } else {
+        description = "";
     }
-    $('#event-desc').text(description);
+	
+    $('#event-desc').html(description);
     $('#event-link').attr("href", info.event._def.extendedProps.location);
     $('#event-modal').modal('show')
 }
