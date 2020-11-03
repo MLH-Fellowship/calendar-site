@@ -130,29 +130,17 @@ function displayEvent(info) {
     const date = info.event._instance.range;
     $('#event-title').text(info.event._def.title);
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
-    let description = info.event._def.extendedProps.description;
-	let calendlyRegexCancel = new RegExp('(https:\/\/calendly.com\/cancellations\/)+');
-	let calendlyRegexReschedule = new RegExp('(https:\/\/calendly.com\/reschedulings\/)+');
-    
-    if (typeof description !== 'undefined') {
-        console.log("")
-        while (calendlyRegexCancel.test(description) || calendlyRegexReschedule.test(description))
-        {
-            description = description.replace(calendlyRegexCancel, '');
-            description = description.replace(calendlyRegexReschedule, '');
-        }
-    
-        let regex = new RegExp('(?<=href=").*?(?=")');
-        let regexHtml = new RegExp('<\s*a[^>]*>(.*?)<\s*/\s*a>');
-        while (regex.test(description))
-        {
-            let url = description.match(regex);
-            description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
-        }
-    } else {
-        description = "";
+    const description = info.event._def.extendedProps.description;
+
+    const normalizationMap = {
+        linkedin: ['your_linkedin_url'],
+        github: ['your_github_url'],
+        twitter: ['your_twitter_url']
     }
-    $('#event-desc').html(filterXSS(description));
+
+    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), normalizationMap, ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule']);
+
+    $('#event-desc').html(filterXSS(desc.raw).replace(/\n/g, '<br>'));
     $('#event-link').attr("href", info.event._def.extendedProps.location);
     $('#event-modal').modal('show')
 }
