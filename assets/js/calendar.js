@@ -124,6 +124,9 @@ const extractDataAndReformatDesciption = (description, normalizationMap, dropMap
     raw: rejoinInOrder(normalized, drop(data, usedKeys))
   }
 }
+
+const RE_URL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/i);
+
 function displayEvent(info) {
     info.jsEvent.preventDefault()
 
@@ -139,6 +142,18 @@ function displayEvent(info) {
     }
 
     const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), normalizationMap, ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule']);
+
+    ['linkedin', 'github', 'twitter'].forEach(key => {
+        const el = $(`#social-${key}`).hide();
+        const v = desc[key]
+        if (v) {
+            const matches = v.match(RE_URL)
+            if (matches[0]) {
+                el.attr('href', matches[0])
+                el.show()
+            }
+        }
+    })
 
     $('#event-desc').html(filterXSS(desc.raw).replace(/\n/g, '<br>'));
     $('#event-link').attr("href", info.event._def.extendedProps.location);
