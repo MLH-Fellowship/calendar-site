@@ -55,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
     calendar.render()
 })
 
+/*
+    Parses using `:` as a delemeter. Anything between `\n` and a `:`
+    is considered a key and everything until the next new line containing
+    a `:` is the value.
+
+    NOTE: The parser ignored colons followed by `//` assuming they are links.
+*/
 const parseKeyVal = desc => {
   const lines = desc.split('\n')
   const store = []
@@ -72,16 +79,22 @@ const parseKeyVal = desc => {
   return store
 }
 
-const removeParentheses = s => {
-  let r = '', i = -1, d=0;
-  while (++i < s.length) {
-    d += s[i] === '('
-    if (!d) r += s[i];
-    d -= s[i] === ')'
+/*
+    Inclusively removes the text contained within parentheses.
+*/
+const removeParentheses = str => {
+  let output = '', i = -1, depth = 0;
+  while (++i < str.length) {
+    depth += str[i] === '('
+    if (!depth) output += str[i];
+    depth -= str[i] === ')'
   }
-  return r
+  return output
 }
 
+/*
+    Remove a list of keys from a copy of the input object.
+*/
 const drop = (o, keys) => {
   const r = {...o}
   keys.forEach(k => {
