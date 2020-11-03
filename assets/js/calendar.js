@@ -78,10 +78,9 @@ function displayEvent(info) {
 	{
 		let url = description.match(regex);
         description = description.replace(regexHtml, url.toString().substring(8, url.toString().length));
-        description = description.replace(/<br\s*[\/]?>/gi, "\n");
 	}
 	
-    $('#event-desc').text(description);
+    $('#event-desc').html(description);
     $('#event-link').attr("href", info.event._def.extendedProps.location);
     $('#event-modal').modal('show')
 }
