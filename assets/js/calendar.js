@@ -55,6 +55,75 @@ document.addEventListener('DOMContentLoaded', () => {
     calendar.render()
 })
 
+const parseKeyVal = desc => {
+  const lines = desc.split('\n')
+  const store = []
+  let foundHead = false
+  for (const line of lines) {
+    const colon = line.indexOf(':')
+    const isLink = line.slice(colon + 1, colon + 3) === '//'
+    if (foundHead && (colon === -1 || isLink)) {
+      store[store.length - 1][1] += line + '\n'
+    } else if (!isLink) {
+      foundHead = true
+      store.push([line.slice(0, colon), line.slice(colon + 1) + '\n'])
+    }
+  }
+  return store
+}
+
+const removeParentheses = s => {
+  let r = '', i = -1, d=0;
+  while (++i < s.length) {
+    d += s[i] === '('
+    if (!d) r += s[i];
+    d -= s[i] === ')'
+  }
+  return r
+}
+
+const drop = (o, keys) => {
+  const r = {...o}
+  keys.forEach(k => {
+    delete r[k]
+  })
+  return r
+}
+
+const rejoinInOrder = (store, data) => 
+  store.reduce((collection, [key]) => collection + ((data[key] || {}).raw || ''), '')
+
+const extractDataAndReformatDesciption = (description, normalizationMap, dropMap) => {
+  const store = parseKeyVal(description)
+  const normalized = store.map(([key, val]) => {
+    return [removeParentheses(key)
+      .replace(/[^\w]+/g, ' ')
+      .trim()
+      .toLowerCase()
+      .replace(/\s/g, '_'), {
+        raw: key + ':' + val,
+        val: val.trim()
+      }
+    ]
+  })
+  console.log(normalized);
+  const data = drop(normalized.reduce((collection, item) => ({ ...collection, [item[0]]: item[1] }), {}), dropMap)
+  const ret = {}
+  const usedKeys = []
+  Object.keys(normalizationMap).forEach(key => {
+    for (const subKey of normalizationMap[key]) {
+      if ((ret[key] = data[subKey]) !== undefined) {
+        ret[key] = ret[key].val;
+        usedKeys.push(subKey)
+        break;
+      }
+    }
+  })
+  return {
+    ...ret,
+    raw: rejoinInOrder(normalized, drop(data, usedKeys))
+  }
+}
 function displayEvent(info) {
     info.jsEvent.preventDefault()
 
