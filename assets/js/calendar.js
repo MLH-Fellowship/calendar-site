@@ -103,11 +103,17 @@ const drop = (o, keys) => {
   return r
 }
 
-const rejoinInOrder = (order, data) => 
-    order.reduce((collection, key) => collection + ((data[key] || {}).raw || ''), '')
+const rejoinInOrder = (order, data, keyOverwites) => 
+    order.reduce((collection, key) => {
+        const item = data[key];
+        if (item !== undefined) {
+            return `${collection}<strong>${(keyOverwites[key] || item.rawKey)}</strong>: ${item.rawVal}`
+        }
+        return collection
+    }, '')
   
 
-const extractDataAndReformatDesciption = (description, normalizationMap, dropMap, orderOverride) => {
+const extractDataAndReformatDesciption = (description, { normalizationMap, dropMap, orderOverride, renameKeys }) => {
     const store = parseKeyVal(description)
     const normalized = store.map(([key, val]) => {
         return [removeParentheses(key)
@@ -115,13 +121,14 @@ const extractDataAndReformatDesciption = (description, normalizationMap, dropMap
         .trim()
         .toLowerCase()
         .replace(/\s/g, '_'), {
-            raw: key + ':' + val,
-            val: val.trim()
-        }
+                raw: key + ':' + val,
+                rawKey: key,
+                rawVal: val,
+                val: val.trim()
+            }
         ]
     })
     const data = drop(normalized.reduce((collection, item) => ({ ...collection, [item[0]]: item[1] }), {}), dropMap)
-    console.log(data);
     const ret = {}
     const usedKeys = [];
     Object.keys(normalizationMap).forEach(key => {
@@ -141,7 +148,7 @@ const extractDataAndReformatDesciption = (description, normalizationMap, dropMap
     
   return {
     ...ret,
-    raw: rejoinInOrder(order, drop(data, usedKeys))
+    raw: rejoinInOrder(order, drop(data, usedKeys), renameKeys)
   }
 }
 
