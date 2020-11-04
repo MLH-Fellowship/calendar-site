@@ -140,11 +140,7 @@ const slugify = str => str
 const extractDataAndReformatDesciption = (description, { normalizationMap, dropMap, orderOverride, renameKeys }) => {
     const store = parseKeyVal(description)
     const normalized = store.map(([key, val]) => {
-        return [slugify(removeParentheses(key))
-        .replace(/[^\w]+/g, ' ')
-        .trim()
-        .toLowerCase()
-        .replace(/\s/g, '_'), {
+        return [slugify(removeParentheses(key)), {
                 raw: key + ':' + val,
                 rawKey: key,
                 rawVal: val,
@@ -152,27 +148,38 @@ const extractDataAndReformatDesciption = (description, { normalizationMap, dropM
             }
         ]
     })
+    // remove all the keys we'll never need and never want to show
     const data = drop(normalized.reduce((collection, item) => ({ ...collection, [item[0]]: item[1] }), {}), dropMap)
-    const ret = {}
-    const usedKeys = [];
-    Object.keys(normalizationMap).forEach(key => {
-        for (const subKey of normalizationMap[key]) {
-            if ((ret[key] = data[subKey]) !== undefined) {
-                ret[key] = ret[key].val
-                usedKeys.push(subKey)
+    
+    // collect the keys we translated so we can remove them before
+    // stitching everything back together
+    const consumedKeys = [];
+
+    // collect the translated keys
+    const translatedKeys = {}
+    Object.keys(normalizationMap).forEach(parent => {
+        for (const child of normalizationMap[parent]) {
+            if (data[child] !== undefined) {
+                translatedKeys[parent] = ret[child].val
+                consumedKeys.push(child)
                 break
             }
         }
     });
+
+    // copy the default order
     const order = [...orderOverride]
+
+    // don't copy items if they already exist in
+    // the overridden order
     normalized.forEach(([key]) => {
         if (!order.includes(key)) order.push(key)
     })
     
-  return {
-    ...ret,
-    raw: rejoinKeyValuesInOrder(order, drop(data, usedKeys), renameKeys)
-  }
+    return {
+        raw: rejoinKeyValuesInOrder(order, drop(data, consumedKeys), renameKeys),
+        ...translatedKeys
+    }
 }
 
 const RE_URL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/i);
