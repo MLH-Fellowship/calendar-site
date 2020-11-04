@@ -179,7 +179,7 @@ function displayEvent(info) {
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
     const description = info.event._def.extendedProps.description;
 
-    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), reformatOptions);
+    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n').replace(/\n[—–-]{2,}\n*/g, ''), reformatOptions);
 
     // fill out social links
     ['linkedin', 'github', 'twitter'].forEach(key => {
