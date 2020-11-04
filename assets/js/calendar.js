@@ -63,20 +63,21 @@ document.addEventListener('DOMContentLoaded', () => {
     NOTE: The parser ignored colons followed by `//` assuming they are links.
 */
 const parseKeyVal = desc => {
-  const lines = desc.split('\n')
-  const store = []
-  let foundHead = false
-  for (const line of lines) {
-    const colon = line.indexOf(':')
-    const isLink = line.slice(colon + 1, colon + 3) === '//'
-    if (foundHead && (colon === -1 || isLink)) {
-      store[store.length - 1][1] += line + '\n'
-    } else if (!isLink) {
-      foundHead = true
-      store.push([line.slice(0, colon), line.slice(colon + 1) + '\n'])
+    const lines = desc.split('\n')
+    // using an array to retain the order we parsed it in
+    const sections = []
+    let foundFirstSection = false
+    for (const line of lines) {
+        const colon = line.indexOf(':')
+        const isLink = line.slice(colon + 1, colon + 3) === '//'
+        if (foundFirstSection && (colon === -1 || isLink)) {
+        sections[sections.length - 1][1] += line + '\n'
+        } else if (!isLink) {
+        foundFirstSection = true
+        sections.push([line.slice(0, colon), line.slice(colon + 1) + '\n'])
+        }
     }
-  }
-  return store
+    return sections
 }
 
 /*
@@ -112,9 +113,12 @@ const rejoinKeyValuesInOrder = (order, data, keyOverwites) =>
     order.reduce((collection, key) => {
         const item = data[key];
         if (item !== undefined) {
+            // if no key override has been set, default to the raw key
             let header = keyOverwites[key] || item.rawKey
+            // if the key is not an empty string
             if (header.length > 0) {
                 header = `<strong>${header}</strong>: `
+                // retain leading newlines in whitespace
                 const leadindingWhitespace = item.rawVal.match(/^\s+/)
                 if (leadindingWhitespace[0].includes('\n')) {
                     header += '\n'
@@ -123,7 +127,9 @@ const rejoinKeyValuesInOrder = (order, data, keyOverwites) =>
             return [...collection, header + item.rawVal.trim()]
         }
         return collection
-    }, []).join('\n\n')
+    }, [])
+        // make all the spaceing equidistant 
+        .join('\n\n')
   
 
 const slugify = str => str
