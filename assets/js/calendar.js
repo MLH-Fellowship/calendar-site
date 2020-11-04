@@ -167,7 +167,7 @@ const reformatOptions = {
         short_speaker_bio: 'Bio',
         what_topics_will_you_be_covering: 'Topics',
         what_type_of_session_is_this: 'Type',
-        can_we_record_this_session: 'Will the session be recorded? '
+        can_we_record_this_session: 'Will the session be recorded'
     }   
 }
 
