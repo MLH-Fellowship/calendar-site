@@ -166,7 +166,7 @@ const extractDataAndReformatDesciption = (description, { normalizationMap, dropM
     Object.keys(normalizationMap).forEach(parent => {
         for (const child of normalizationMap[parent]) {
             if (data[child] !== undefined) {
-                translatedKeys[parent] = ret[child].val
+                translatedKeys[parent] = data[child].val
                 consumedKeys.push(child)
                 break
             }
