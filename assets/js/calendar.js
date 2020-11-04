@@ -168,7 +168,7 @@ const reformatOptions = {
         github: ['your_github_url'],
         twitter: ['your_twitter_url']
     },
-    dropMap: ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule', 'thumbnail'],
+    dropMap: ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule', 'thumbnail', 'join_this_call_15_minutes_beforehand', 'join_this_skype_call_15_minutes_before'],
     orderOverride: ['speaker', 'short_speaker_bio', 'please_give_a_brief_description_of_this_session_this_will_be_shared_with_the_fellows'],
     renameKeys: {
         please_give_a_brief_description_of_this_session_this_will_be_shared_with_the_fellows: 'Description',
