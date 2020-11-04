@@ -154,15 +154,22 @@ const extractDataAndReformatDesciption = (description, { normalizationMap, dropM
 
 const RE_URL = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/i);
 
-const NORMALIZATION_MAP = {
-    linkedin: ['your_linkedin_url'],
-    github: ['your_github_url'],
-    twitter: ['your_twitter_url']
+const reformatOptions = {
+    normalizationMap: {
+        linkedin: ['your_linkedin_url'],
+        github: ['your_github_url'],
+        twitter: ['your_twitter_url']
+    },
+    dropMap: ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule', 'thumbnail'],
+    orderOverride: ['speaker', 'short_speaker_bio', 'please_give_a_brief_description_of_this_session_this_will_be_shared_with_the_fellows'],
+    renameKeys: {
+        please_give_a_brief_description_of_this_session_this_will_be_shared_with_the_fellows: 'Description',
+        short_speaker_bio: 'Bio',
+        what_topics_will_you_be_covering: 'Topics',
+        what_type_of_session_is_this: 'Type',
+        can_we_record_this_session: 'Will the session be recorded? '
+    }   
 }
-
-const DROP_MAP = ['event_name', 'what_is_the_title_of_this_session', 'cancellation_policy', 'cancel', 'reschedule']
-
-const ORDER_OVERRIDE = ['speaker', 'short_speaker_bio', 'please_give_a_brief_description_of_this_session_this_will_be_shared_with_the_fellows']
 
 function displayEvent(info) {
     info.jsEvent.preventDefault()
@@ -172,7 +179,7 @@ function displayEvent(info) {
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
     const description = info.event._def.extendedProps.description;
 
-    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), NORMALIZATION_MAP, DROP_MAP, ORDER_OVERRIDE);
+    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n'), reformatOptions);
 
     // fill out social links
     ['linkedin', 'github', 'twitter'].forEach(key => {
