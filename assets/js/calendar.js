@@ -185,7 +185,7 @@ function displayEvent(info) {
     const date = info.event._instance.range;
     $('#event-title').text(info.event._def.title);
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
-    const description = info.event._def.extendedProps.description;
+    const description = info.event._def.extendedProps.description || '';
 
     const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n').replace(/\n[—–-]{2,}\n*/g, ''), reformatOptions);
 
