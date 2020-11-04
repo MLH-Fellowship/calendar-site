@@ -107,10 +107,18 @@ const rejoinInOrder = (order, data, keyOverwites) =>
     order.reduce((collection, key) => {
         const item = data[key];
         if (item !== undefined) {
-            return `${collection}<strong>${(keyOverwites[key] || item.rawKey)}</strong>: ${item.rawVal}`
+            let header = keyOverwites[key] || item.rawKey
+            if (header.length > 0) {
+                header = `<strong>${header}</strong>: `
+                const leadindingWhitespace = item.rawVal.match(/^\s+/)
+                if (leadindingWhitespace[0].includes('\n')) {
+                    header += '\n'
+                }
+            }
+            return [...collection, header + item.rawVal.trim()]
         }
         return collection
-    }, '')
+    }, []).join('\n\n')
   
 
 const extractDataAndReformatDesciption = (description, { normalizationMap, dropMap, orderOverride, renameKeys }) => {
