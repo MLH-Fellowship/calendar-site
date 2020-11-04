@@ -103,7 +103,12 @@ const drop = (o, keys) => {
   return r
 }
 
-const rejoinInOrder = (order, data, keyOverwites) => 
+/*
+    Usess the `order` param to rejoin the data in a clean way similar to the
+    originally parsed data. `keyOverwites` is an object that defines
+    which keys should be renamed and what they should be renamed to.
+*/
+const rejoinKeyValuesInOrder = (order, data, keyOverwites) => 
     order.reduce((collection, key) => {
         const item = data[key];
         if (item !== undefined) {
@@ -121,10 +126,21 @@ const rejoinInOrder = (order, data, keyOverwites) =>
     }, []).join('\n\n')
   
 
+const slugify = str => str
+        .replace(/[^\w]+/g, ' ')
+        .trim()
+        .toLowerCase()
+        .replace(/\s/g, '_')
+
+/*
+    Takes a couple of inputs and runs the data though all the above functions to normalize the data,
+    pick out and remove certian sections/keys, and then rejoin the data, evenly space the new lines,
+    bolden the leading text before the colons on each line, etc.
+*/
 const extractDataAndReformatDesciption = (description, { normalizationMap, dropMap, orderOverride, renameKeys }) => {
     const store = parseKeyVal(description)
     const normalized = store.map(([key, val]) => {
-        return [removeParentheses(key)
+        return [slugify(removeParentheses(key))
         .replace(/[^\w]+/g, ' ')
         .trim()
         .toLowerCase()
@@ -153,10 +169,9 @@ const extractDataAndReformatDesciption = (description, { normalizationMap, dropM
         if (!order.includes(key)) order.push(key)
     })
     
-    
   return {
     ...ret,
-    raw: rejoinInOrder(order, drop(data, usedKeys), renameKeys)
+    raw: rejoinKeyValuesInOrder(order, drop(data, usedKeys), renameKeys)
   }
 }
 
@@ -185,24 +200,26 @@ function displayEvent(info) {
     const date = info.event._instance.range;
     $('#event-title').text(info.event._def.title);
     $('#event-date').text(FullCalendar.formatRange(date.start, date.end, DATE_RANGE_FORMAT));
-    const description = info.event._def.extendedProps.description || '';
 
-    const desc = extractDataAndReformatDesciption(description.replace(/<br>/g, '\n').replace(/\n[—–-]{2,}\n*/g, ''), reformatOptions);
+    const description = extractDataAndReformatDesciption(
+        (info.event._def.extendedProps.description || '')
+            .replace(/<br>/g, '\n')
+            .replace(/\n[—–-]{2,}\n*/g, ''),
+        reformatOptions
+    );
 
     // fill out social links
     ['linkedin', 'github', 'twitter'].forEach(key => {
         const el = $(`#social-${key}`).hide();
-        const v = desc[key]
-        if (v) {
-            const matches = v.match(RE_URL)
-            if (matches[0]) {
-                el.attr('href', matches[0])
-                el.show()
+        if (description[key]) {
+            const match = description[key].match(RE_URL)
+            if (match) {
+                el.attr('href', match[0]).show()
             }
         }
     })
 
-    $('#event-desc').html(filterXSS(desc.raw).replace(/\n/g, '<br>'));
+    $('#event-desc').html(filterXSS(description.raw.replace(/\n/g, '<br>')));
     $('#event-link').attr("href", info.event._def.extendedProps.location);
     $('#event-modal').modal('show')
 }
