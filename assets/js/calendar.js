@@ -235,7 +235,11 @@ function displayEvent(info) {
     })
 
     $('#event-desc').html(filterXSS(description.raw.replace(/\n/g, '<br>')));
-    $('#event-link').attr("href", info.event._def.extendedProps.location);
+    if (info.event._def.extendedProps.location) {
+        $('#event-link').attr("href", info.event._def.extendedProps.location).show();
+    } else {
+        $('#event-link').hide();
+    }
     $('#event-modal').modal('show')
 }
 
