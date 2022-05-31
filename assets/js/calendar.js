@@ -10,12 +10,14 @@ const DATE_24HR_FORMAT = {
 
 const DATE_RANGE_FORMAT = {
     month: 'short',
-    day: 'numeric',
+    day: '2-digit',
     separator: ' to ',
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-    timeZone: 'UTC'
+    timeZone: 'UTC',
+    weekday: 'long',
+    omitCommas: true,
 }
 
 let calendar
