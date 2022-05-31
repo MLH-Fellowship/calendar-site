@@ -120,7 +120,7 @@ const rejoinKeyValuesInOrder = (order, data, keyOverwites) =>
                 header = `<strong>${header}</strong>: `
                 // retain leading newlines in whitespace
                 const leadindingWhitespace = item.rawVal.match(/^\s+/)
-                if (leadindingWhitespace[0].includes('\n')) {
+                if (leadindingWhitespace && leadindingWhitespace[0].includes('\n')) {
                     header += '\n'
                 }
             }
