@@ -1,5 +1,5 @@
 const CALENDAR_ID = 'majorleaguehacking.com_pr3njjh4ok0pi93jfqm51jg2g0@group.calendar.google.com'
-const CALENDAR_KEY = 'AIzaSyBHhjGzlrwIdJxd-Faj8XihwdoMKJzttXk'
+const CALENDAR_KEY = 'AIzaSyByyU4-2DA7uGtQcy8P-o4FSagkm0AQyII'
 
 const DATE_24HR_FORMAT = {
     hour: '2-digit',
